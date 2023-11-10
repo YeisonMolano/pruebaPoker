@@ -1,0 +1,219 @@
+<div class="p-d-flex p-jc-center">
+  <h1>¡Prueba poker 4 digitos!</h1>
+</div>
+<div class="p-grid" style="opacity: 0.95;">
+  <div class="p-col-2" style="background-color: aliceblue;">
+    <div class="p-d-flex p-jc-center">
+      <h2>Datos iniciales:</h2>
+    </div>
+    <form [formGroup]="formTable" action="">
+      <div class="p-d-flex p-jc-center">
+        <input
+          pInputText
+          pKeyFilter="int"
+          placeholder="Digite el valor de X0"
+          formControlName="x0"
+        />
+      </div>
+      <br />
+      <div class="p-d-flex p-jc-center">
+        <input
+          pInputText
+          pKeyFilter="int"
+          placeholder="Digite el valor de X1"
+          formControlName="x1"
+        />
+      </div>
+      <br />
+      <div class="p-d-flex p-jc-center">
+        <input
+          pInputText
+          pKeyFilter="int"
+          placeholder="Cantidad de numeros a generar"
+          formControlName="amount"
+        />
+      </div>
+      <div class="p-col-12">
+        <div class="p-d-flex p-jc-center">
+          <p-button
+            label="Generar tabla"
+            styleClass="p-button-outlined"
+            severity="danger"
+            (onClick)="generateTable()"
+          ></p-button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="p-col-6">
+    <p-table
+      [value]="numbers"
+      styleClass="p-datatable-gridlines"
+      [scrollable]="true"
+      scrollHeight="400px"
+    >
+      <ng-template pTemplate="caption">
+        Numeros generados con el método de productos medios
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>N</th>
+          <th>X0</th>
+          <th>X1</th>
+          <th>Y =X0*X1</th>
+          <th>Extención</th>
+          <th>Centro</th>
+          <th>ri</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-product>
+        <tr>
+          <td>{{ product.n }}</td>
+          <td>{{ product.x0 }}</td>
+          <td>{{ product.x1 }}</td>
+          <td>{{ product.y }}</td>
+          <td>{{ product.extension }}</td>
+          <td>{{ product.center }}</td>
+          <td>{{ product.ri }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="summary"> <div class="p-d-flex p-jc-between">
+        Deslice hacia abajo 
+        <p-button
+          label="Generar prueba poker"
+          styleClass="p-button-outlined"
+          severity="danger"
+          (onClick)="generatePoker()"
+          [disabled]="numbers.length == 0"
+        ></p-button>
+      </div>
+     </ng-template>
+    </p-table>
+  </div>
+  <div class="p-col-4">
+    <p-table
+      [value]="poker"
+      styleClass="p-datatable-gridlines"
+      [scrollable]="true"
+      scrollHeight="400px"
+    >
+      <ng-template pTemplate="caption">
+        Prueba poker
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>ri</th>
+          <th>Categoria</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-number>
+        <tr>
+          <td>{{ number.ri }}</td>
+          <td>{{ number.categoria }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="summary"> <div class="p-d-flex p-jc-between">
+        Deslice hacia abajo 
+        <p-button
+          label="Ver resultado general"
+          styleClass="p-button-outlined"
+          severity="danger"
+          (onClick)="generateResultGeneral()"
+          [disabled]="poker.length == 0"
+        ></p-button>
+      </div> </ng-template>
+    </p-table>
+  </div>
+</div>
+
+<p-dialog class="p-grid" header="Nuevo Despacho" [(visible)]="visible">
+  <p-table
+      [value]="total"
+      styleClass="p-datatable-gridlines"
+      [scrollable]="true"
+      scrollHeight="400px"
+    >
+      <ng-template pTemplate="caption">
+        Prueba poker
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Categorias</th>
+          <th>FREC OBS (FO)</th>
+          <th>FREC ESPE (FE)</th>
+          <th>Xo^2</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-total>
+        <tr>
+          <td>{{ total.cat }}</td>
+          <td>{{ total.frecObs }}</td>
+          <td>{{ total.frecEsp }}</td>
+          <td>{{ total.elevated }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <br>
+    <div class="p-d-flex p-jc-end">
+      <p-button
+          label="Ver solución"
+          styleClass="p-button-outlined"
+          severity="danger"
+          (onClick)="activeSecondModal()"
+          [disabled]="poker.length == 0"
+        ></p-button>
+    </div>
+</p-dialog>
+
+<p-dialog class="p-grid" header="Nuevo Despacho" [(visible)]="modalTwo" [style]="{width: '30vw', height: '30vw'}">
+  <div class="p-d-flex p-jc-between">
+    <label for="">m(4 digitos)</label>
+    <input
+      pInputText
+      pKeyFilter="int"
+      placeholder="4"
+      [disabled]="true"
+    />
+  </div>
+  <br>
+  <div class="p-d-flex p-jc-between">
+    <label for="">Nivel de aceptación</label>
+    <p-dropdown [options]="items" [(ngModel)]="selectedAcceptance" (ngModelChange)="onModelChange()" placeholder="Seleccione nivel de aceptación" 
+    [virtualScroll]="true" [virtualScrollItemSize]="5" optionLabel="acceptanceLevel"></p-dropdown>
+  </div>
+  <br>
+  <div class="p-d-flex p-jc-between">
+    <label for="">Porcentaje de error (%)</label>
+    <input
+      pInputText
+      pKeyFilter="int"
+      [placeholder]="errorPercentage / 100"
+      [disabled]="true"
+    />
+  </div>
+  <br>
+  <div class="p-d-flex p-jc-between">
+    <label for="">Chi-cuadrada</label>
+    <input
+      pInputText
+      pKeyFilter="int"
+      [placeholder]="chiInv"
+      [disabled]="true"
+    />
+  </div>
+  <br>
+  <div class="p-d-flex p-jc-center">
+    <label for="">Resultado: {{ result }}</label>
+  </div>
+</p-dialog>
+
+<div class="p-d-flex p-jc-end">
+  <p-button
+          label="Reset"
+          styleClass="p-button-outlined"
+          severity="danger"
+          (onClick)="reset()"
+        ></p-button>
+</div>
+
+<p-toast></p-toast>
